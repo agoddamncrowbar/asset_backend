@@ -20,7 +20,8 @@ class UpdateJob
             'assigned_to'      => $data['assigned_to'] ?? $job['assigned_to'],
             'started_at'       => $job['started_at'],
             'completed_at'     => $job['completed_at'],
-            'resolution_notes' => $job['resolution_notes']
+            'resolution_notes' => $job['resolution_notes'],
+            'issue_report'     => $data['issue_report'] ?? $job['issue_report'],
         ]);
     }
 }

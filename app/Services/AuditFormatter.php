@@ -152,4 +152,25 @@ class AuditFormatter
                 )
             );
     }
+
+    public function getAuditLogs(
+        int $limit,
+        int $offset
+    ): array {
+
+        $logs = AuditLog::getAll($limit, $offset);
+        $total = AuditLog::count();
+
+        return [
+            'data' => array_map(
+                [AuditFormatter::class, 'format'],
+                $logs
+            ),
+            'pagination' => [
+                'total' => $total,
+                'limit' => $limit,
+                'offset' => $offset
+            ]
+        ];
+    }
 }

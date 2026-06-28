@@ -2,8 +2,9 @@
 
 namespace App\Middleware;
 
+use App\Core\Router;
 use App\Helpers\Auth;
-use App\Models\AssetMaintenance;
+use App\Models\AssetMaintenanceJob;
 
 class MaintenanceAccessMiddleware
 {
@@ -12,29 +13,28 @@ class MaintenanceAccessMiddleware
         $user = Auth::user();
 
         if (!$user) {
-            self::deny(401, "Unauthenticated");
+            self::deny(401, 'Unauthenticated');
         }
 
-        // Admins can access everything
+        // Admins can access all maintenance jobs.
         if ($user['role'] === 'admin') {
             return;
         }
 
-        // Get maintenance ID from route parameters
-        $maintenanceId = $_REQUEST['id'] ?? null;
+        $jobId = Router::instance()->getRouteParam(0);
 
-        if (!$maintenanceId) {
-            self::deny(400, "ID missing");
+        if ($jobId === null) {
+            self::deny(400, 'Maintenance job ID is required');
         }
 
-        $maintenance = AssetMaintenance::findById($maintenanceId);
+        $job = AssetMaintenanceJob::findById((int) $jobId);
 
-        if (!$maintenance) {
-            self::deny(404, "Maintenance job not found");
+        if (!$job) {
+            self::deny(404, 'Maintenance job not found');
         }
 
-        if ($maintenance['assigned_to'] != $user['id']) {
-            self::deny(403, "Forbidden");
+        if ((int) $job['assigned_to'] !== (int) $user['id']) {
+            self::deny(403, 'Forbidden');
         }
     }
 
@@ -42,9 +42,11 @@ class MaintenanceAccessMiddleware
     {
         http_response_code($status);
 
+        header('Content-Type: application/json');
+
         echo json_encode([
-            "success" => false,
-            "message" => $message
+            'success' => false,
+            'message' => $message
         ]);
 
         exit;

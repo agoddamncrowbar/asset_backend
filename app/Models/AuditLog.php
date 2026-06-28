@@ -114,6 +114,73 @@ class AuditLog
         );
     }
 
+
+
+    public static function search(string $query, int $limit = 50, int $offset = 0): array
+    {
+        $db = Database::getInstance()->getConnection();
+        $search = '%' . trim($query) . '%';
+        $limit = (int) $limit;
+        $offset = (int) $offset;
+        $sql = "
+            SELECT *
+            FROM audit_logs
+            WHERE action LIKE ?
+            OR entity_type LIKE ?
+            OR entity_id LIKE ?
+            OR CAST(user_id AS CHAR) LIKE ?
+            ORDER BY created_at DESC
+            LIMIT $limit OFFSET $offset
+        ";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            $search,
+            $search,
+            $search,
+            $search
+        ]);
+        $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return array_map(
+            [self::class, 'decodeJsonFields'],
+            $logs
+        );
+    }
+
+    public static function searchCount(string $query): int
+    {
+        $db = Database::getInstance()->getConnection();
+        $search = '%' . trim($query) . '%';
+        $stmt = $db->prepare("
+            SELECT COUNT(*)
+            FROM audit_logs
+            WHERE action LIKE ?
+                OR entity_type LIKE ?
+                OR entity_id LIKE ?
+                OR CAST(user_id AS CHAR) LIKE ?
+        ");
+        $stmt->execute([
+            $search,
+            $search,
+            $search,
+            $search
+        ]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    public static function count(): int
+    {
+        $db = Database::getInstance()->getConnection();
+
+        $stmt = $db->query("
+            SELECT COUNT(*)
+            FROM audit_logs
+        ");
+
+        return (int) $stmt->fetchColumn();
+    }
+
+
+
     private static function decodeJsonFields(
         array $log
     ): array {
@@ -131,4 +198,7 @@ class AuditLog
 
         return $log;
     }
+
+
+
 }

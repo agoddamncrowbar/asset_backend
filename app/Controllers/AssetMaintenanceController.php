@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Services\AssetMaintenanceService;
+use App\Helpers\Auth;
 
 class AssetMaintenanceController
 {
@@ -10,12 +11,19 @@ class AssetMaintenanceController
     {
         header('Content-Type: application/json');
 
+        $user = Auth::user();
+
+        if ($user['role'] === 'admin') {
+            $jobs = AssetMaintenanceService::getAll();
+        } else {
+            $jobs = AssetMaintenanceService::getByAssignedUser($user['id']);
+        }
+
         echo json_encode([
             'success' => true,
-            'data' => AssetMaintenanceService::getAll()
+            'data' => $jobs
         ]);
     }
-
     public function show($id)
     {
         header('Content-Type: application/json');
@@ -82,6 +90,17 @@ class AssetMaintenanceController
             'success' => true,
             'message' => 'Maintenance job completed successfully.',
             'data' => $job
+        ]);
+    }
+    public function search()
+    {
+        header('Content-Type: application/json');
+
+        $query = trim($_GET['q'] ?? '');
+
+        echo json_encode([
+            'success' => true,
+            'data' => AssetMaintenanceService::search($query)
         ]);
     }
 }

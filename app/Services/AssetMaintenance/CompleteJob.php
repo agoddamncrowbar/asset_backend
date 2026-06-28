@@ -20,7 +20,7 @@ class CompleteJob
             throw new \Exception("Job must be in progress to complete");
         }
 
-        $resolution = $data['resolution']; 
+        $resolution = $data['resolution_notes']; 
         // expected: fixed | not_repairable
 
         $notes = $data['resolution_notes'] ?? null;
@@ -58,4 +58,5 @@ class CompleteJob
 
         return $updatedJob;
     }
+    
 }

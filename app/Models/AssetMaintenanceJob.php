@@ -71,7 +71,8 @@ class AssetMaintenanceJob
                  assigned_to = :assigned_to,
                  started_at = :started_at,
                  completed_at = :completed_at,
-                 resolution_notes = :resolution_notes
+                 resolution_notes = :resolution_notes,
+                 issue_report = :issue_report
              WHERE id = :id"
         );
 
@@ -82,7 +83,8 @@ class AssetMaintenanceJob
             'assigned_to'      => $data['assigned_to'] ?? null,
             'started_at'       => $data['started_at'] ?? null,
             'completed_at'     => $data['completed_at'] ?? null,
-            'resolution_notes' => $data['resolution_notes'] ?? null
+            'resolution_notes' => $data['resolution_notes'] ?? null,
+            'issue_report'     => $data['issue_report'] ?? null,
         ]);
 
         return self::findById($id);
@@ -99,5 +101,53 @@ class AssetMaintenanceJob
         return $stmt->execute([
             'id' => $id
         ]);
+    }
+    public static function getByAssignedUser(int $userId): array
+    {
+        $db = Database::getInstance()->getConnection();
+
+        $stmt = $db->prepare(
+            "SELECT *
+            FROM asset_maintenance_jobs
+            WHERE assigned_to = :user_id
+            ORDER BY id DESC"
+        );
+
+        $stmt->execute([
+            'user_id' => $userId
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    
+    public static function search(string $query): array
+    {
+        $db = Database::getInstance()->getConnection();
+
+        $search = '%' . trim($query) . '%';
+
+        $stmt = $db->prepare(
+            "SELECT amj.*
+                FROM asset_maintenance_jobs amj
+                LEFT JOIN users u ON u.id = amj.assigned_to
+                WHERE
+                    CAST(amj.id AS CHAR) LIKE :search
+                    OR CAST(amj.asset_id AS CHAR) LIKE :search
+                    OR amj.status LIKE :search
+                    OR amj.priority LIKE :search
+                    OR amj.issue_report LIKE :search
+                    OR amj.resolution_notes LIKE :search
+                    OR u.first_name LIKE :search
+                    OR u.last_name LIKE :search
+                    OR u.email LIKE :search
+                ORDER BY amj.id DESC;"
+        );
+
+        $stmt->execute([
+            'search' => $search
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

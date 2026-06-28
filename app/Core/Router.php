@@ -6,7 +6,8 @@ class Router
 {
     private array $routes = [];
     private string $basePath = '';
-
+    private array $currentRouteParams = [];
+    private static ?Router $instance = null;
     public function setBasePath(string $basePath): void
     {
         $this->basePath = rtrim($basePath, '/');
@@ -76,7 +77,7 @@ class Router
             }
 
             array_shift($matches);
-
+            $this->currentRouteParams = $matches;
             /*
              * =========================
              * 1. Execute Middleware
@@ -128,5 +129,28 @@ class Router
             'success' => false,
             'message' => 'Route not found'
         ]);
+    }
+    public function getRouteParams(): array
+    {
+        return $this->currentRouteParams;
+    }
+
+    public function getRouteParam(int $index): mixed
+    {
+        return $this->currentRouteParams[$index] ?? null;
+    }
+
+    public function __construct()
+    {
+        self::$instance = $this;
+    }
+
+    public static function instance(): Router
+    {
+        if (self::$instance === null) {
+            throw new \RuntimeException('Router has not been initialized.');
+        }
+
+        return self::$instance;
     }
 }

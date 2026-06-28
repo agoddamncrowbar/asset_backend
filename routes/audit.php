@@ -17,3 +17,7 @@ $router->get( '/api/audit-logs/{id}', [AuditController::class, 'show'], $adminOn
 $router->get( '/api/audit-log-summaries', [AuditController::class, 'summaries'], $adminOnly );
 
 $router->get( '/api/audit-log-summaries/{id}', [AuditController::class, 'summaryById'], $adminOnly );
+
+$router->get( '/api/audit-search', [AuditController::class, 'search'], $adminOnly );
+
+$router->get( '/api/audit-log-export', [AuditController::class, 'exportCsv'], $adminOnly );

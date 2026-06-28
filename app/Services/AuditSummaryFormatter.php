@@ -83,4 +83,24 @@ class AuditSummaryFormatter
 
         return $count;
     }
+    public function getAuditSummaries(
+        int $limit,
+        int $offset
+    ): array {
+
+        $logs = AuditLog::getAll($limit, $offset);
+        $total = AuditLog::count();
+
+        return [
+            'data' => array_map(
+                [AuditSummaryFormatter::class, 'format'],
+                $logs
+            ),
+            'pagination' => [
+                'total' => $total,
+                'limit' => $limit,
+                'offset' => $offset
+            ]
+        ];
+    }
 }
