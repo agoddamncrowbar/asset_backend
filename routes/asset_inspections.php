@@ -24,6 +24,6 @@ $router->post('/api/inspections/{id}/start', [AssetInspectionController::class, 
 $router->post('/api/inspections/{id}/complete', [AssetInspectionController::class, 'complete'], $adminOnly);
 
 // Per-asset inspection result
-$router->post(
-    '/api/inspections/{inspectionId}/assets/{assetId}/result',
-    [AssetInspectionController::class, 'recordResult'], $adminOnly);
+$router->post('/api/inspections/{inspectionId}/assets/{assetId}/result',[AssetInspectionController::class, 'recordResult'], $adminOnly);
+
+$router->get('/api/inspections/{id}/assets', [AssetInspectionController::class, 'assetIds']);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\UserController;
+use App\Controllers\SearchUserController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\RoleMiddleware;
 
@@ -11,7 +12,7 @@ $adminOnly = [
 
 $router->get('/api/users', [UserController::class, 'index'], $adminOnly);
 
-$router->get('/api/users/search', [UserController::class, 'search'], $adminOnly);
+$router->get('/api/users/search', [SearchUserController::class, 'search'], $adminOnly);
 
 $router->get('/api/users/{id}', [UserController::class, 'show'], $adminOnly);
 

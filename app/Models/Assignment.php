@@ -19,7 +19,64 @@ class Assignment
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    public static function getPaginated(
+        int $page,
+        int $limit
+    ): array
+    {
+        $db = Database::getInstance()->getConnection();
 
+        $offset = ($page - 1) * $limit;
+
+        // Total records
+        $countStmt = $db->query(
+            "SELECT COUNT(*) as total
+            FROM asset_assignments"
+        );
+
+        $total = (int) $countStmt->fetch(
+            PDO::FETCH_ASSOC
+        )['total'];
+
+        // Page data
+        $stmt = $db->prepare(
+            "SELECT *
+            FROM asset_assignments
+            ORDER BY id DESC
+            LIMIT :limit OFFSET :offset"
+        );
+
+        $stmt->bindValue(
+            ':limit',
+            $limit,
+            PDO::PARAM_INT
+        );
+
+        $stmt->bindValue(
+            ':offset',
+            $offset,
+            PDO::PARAM_INT
+        );
+
+        $stmt->execute();
+
+        $data = $stmt->fetchAll(
+            PDO::FETCH_ASSOC
+        );
+
+        return [
+            'data' => $data,
+            'pagination' => [
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total,
+                'total_pages' => (int) ceil(
+                    $total / $limit
+                )
+            ]
+        ];
+    }
     public static function findById(int $id): ?array
     {
         $db = Database::getInstance()->getConnection();

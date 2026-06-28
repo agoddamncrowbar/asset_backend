@@ -44,17 +44,22 @@ class SearchUser
                 email,
                 role,
                 status
-             FROM users
-             WHERE university_id LIKE :search
-                OR first_name LIKE :search
-                OR last_name LIKE :search
-                OR CONCAT(first_name, ' ', last_name) LIKE :search
-             ORDER BY first_name ASC, last_name ASC
-             LIMIT 20"
+            FROM users
+            WHERE university_id LIKE :search1
+                OR first_name LIKE :search2
+                OR last_name LIKE :search3
+                OR CONCAT(first_name, ' ', last_name) LIKE :search4
+            ORDER BY first_name ASC, last_name ASC
+            LIMIT 20"
         );
 
+        $term = "%{$query}%";
+
         $stmt->execute([
-            'search' => "%{$query}%"
+            'search1' => $term,
+            'search2' => $term,
+            'search3' => $term,
+            'search4' => $term,
         ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -29,7 +29,7 @@ class SearchUserController
             ], 400);
         }
 
-        $users = User::search($query);
+        $users = SearchUser::search($query);
 
         $this->json([
             'success' => true,
@@ -42,7 +42,7 @@ class SearchUserController
      */
     public function assetStatus(int $id): void
     {
-        $user = User::findById($id);
+        $user = SearchUser::findById($id);
 
         if (!$user) {
             $this->json([
@@ -53,7 +53,7 @@ class SearchUserController
 
         $this->json([
             'success' => true,
-            'data' => User::getUserAssetStatus($id)
+            'data' => SearchUser::getUserAssetStatus($id)
         ]);
     }
 }

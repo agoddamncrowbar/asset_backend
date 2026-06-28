@@ -3,49 +3,102 @@
 namespace App\Controllers;
 
 use App\Services\AssetInspectionService;
+use App\Models\InspectionAssets;
 
 class AssetInspectionController
 {
     public function index()
     {
-        return AssetInspectionService::getAll();
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            "success" => true,
+            "data" => AssetInspectionService::getAll()
+        ]);
     }
 
     public function show($id)
     {
-        return AssetInspectionService::getById($id);
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            "success" => true,
+            "data" => AssetInspectionService::getById($id)
+        ]);
     }
 
     public function create()
     {
         $data = json_decode(file_get_contents("php://input"), true);
 
-        return AssetInspectionService::create($data);
+        $inspection = AssetInspectionService::create($data);
+
+        http_response_code(201);
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Inspection created successfully.",
+            "data" => $inspection
+        ]);
     }
 
     public function start($id)
     {
-        return AssetInspectionService::start((int)$id);
+        $inspection = AssetInspectionService::start((int)$id);
+
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Inspection started successfully.",
+            "data" => $inspection
+        ]);
     }
 
     public function recordResult($inspectionId, $assetId)
     {
         $data = json_decode(file_get_contents("php://input"), true);
 
-        return AssetInspectionService::recordResult(
+        $result = AssetInspectionService::recordResult(
             (int)$inspectionId,
             (int)$assetId,
             $data
         );
+
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Inspection result recorded successfully.",
+            "data" => $result
+        ]);
     }
 
     public function complete($id)
     {
         $data = json_decode(file_get_contents("php://input"), true);
 
-        return AssetInspectionService::complete(
+        $inspection = AssetInspectionService::complete(
             (int)$id,
             $data['user_id']
         );
+
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Inspection completed successfully.",
+            "data" => $inspection
+        ]);
+    }
+    public function assetIds($inspectionId)
+    {
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            "success" => true,
+            "data" => InspectionAssets::getAssetIdsByInspection((int)$inspectionId)
+        ]);
     }
 }

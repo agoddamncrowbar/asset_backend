@@ -8,37 +8,80 @@ class AssetMaintenanceController
 {
     public function index()
     {
-        return AssetMaintenanceService::getAll();
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            'success' => true,
+            'data' => AssetMaintenanceService::getAll()
+        ]);
     }
 
     public function show($id)
     {
-        return AssetMaintenanceService::getById((int)$id);
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            'success' => true,
+            'data' => AssetMaintenanceService::getById((int)$id)
+        ]);
     }
 
     public function store()
     {
         $data = json_decode(file_get_contents("php://input"), true);
 
-        return AssetMaintenanceService::create($data);
+        $job = AssetMaintenanceService::create($data);
+
+        http_response_code(201);
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Maintenance job created successfully.',
+            'data' => $job
+        ]);
     }
 
     public function start($id)
     {
-        return AssetMaintenanceService::start((int)$id);
+        $job = AssetMaintenanceService::start((int)$id);
+
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Maintenance job started successfully.',
+            'data' => $job
+        ]);
     }
 
     public function update($id)
     {
         $data = json_decode(file_get_contents("php://input"), true);
 
-        return AssetMaintenanceService::update((int)$id, $data);
+        $job = AssetMaintenanceService::update((int)$id, $data);
+
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Maintenance job updated successfully.',
+            'data' => $job
+        ]);
     }
 
     public function complete($id)
     {
         $data = json_decode(file_get_contents("php://input"), true);
 
-        return AssetMaintenanceService::complete((int)$id, $data);
+        $job = AssetMaintenanceService::complete((int)$id, $data);
+
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Maintenance job completed successfully.',
+            'data' => $job
+        ]);
     }
 }

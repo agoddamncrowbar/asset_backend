@@ -19,9 +19,18 @@ class AssignmentController
 
     public function index(): void
     {
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $limit = max(1, (int) ($_GET['limit'] ?? 10));
+
+        $result = Assignment::getPaginated(
+            $page,
+            $limit
+        );
+
         $this->json([
             'success' => true,
-            'data' => Assignment::getAll()
+            'data' => $result['data'],
+            'pagination' => $result['pagination']
         ]);
     }
 

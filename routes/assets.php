@@ -1,8 +1,11 @@
 <?php
 
 use App\Controllers\AssetController;
+use App\Controllers\AssetSearchController;
 
 $router->get( '/api/assets', [AssetController::class, 'index'] );
+
+$router->get( '/api/assets/search', [AssetSearchController::class, 'search'] );
 
 $router->get( '/api/assets/{id}', [AssetController::class, 'show'] );
 

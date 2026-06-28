@@ -9,15 +9,15 @@ $adminOnly = [
     [RoleMiddleware::class, ['admin']]
 ];
 // CRUD
-$router->get('/api/maintenance', [AssetMaintenanceController::class, 'index'], $adminOnly);
+$router->get('/api/maintenance', [AssetMaintenanceController::class, 'index']);
 
-$router->get('/api/maintenance/{id}', [AssetMaintenanceController::class, 'show'], $adminOnly);
+$router->get('/api/maintenance/{id}', [AssetMaintenanceController::class, 'show']);
 
 $router->post('/api/maintenance', [AssetMaintenanceController::class, 'store'], $adminOnly);
 
-$router->put('/api/maintenance/{id}', [AssetMaintenanceController::class, 'update'], $adminOnly);
+$router->put('/api/maintenance/{id}', [AssetMaintenanceController::class, 'update']);
 
 // Workflow
-$router->post('/api/maintenance/{id}/start', [AssetMaintenanceController::class, 'start'], $adminOnly);
+$router->post('/api/maintenance/{id}/start', [AssetMaintenanceController::class, 'start']);
 
-$router->post('/api/maintenance/{id}/complete', [AssetMaintenanceController::class, 'complete'], $adminOnly);
+$router->post('/api/maintenance/{id}/complete', [AssetMaintenanceController::class, 'complete']);
