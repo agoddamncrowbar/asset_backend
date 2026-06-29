@@ -62,7 +62,7 @@ class Request
             SELECT *
             FROM asset_requests
             WHERE asset_id = :asset_id
-              AND status = 'queued'
+            AND status IN ('queued', 'approved')
             ORDER BY queue_position ASC
         ");
 
@@ -102,7 +102,7 @@ class Request
             SELECT COALESCE(MAX(queue_position), 0) + 1
             FROM asset_requests
             WHERE asset_id = :asset_id
-              AND status = 'queued'
+              AND status IN ('queued', 'approved')
         ");
 
         $stmt->execute(['asset_id' => $assetId]);
